@@ -1,68 +1,48 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/*
+Highlight 主题色，可以作为标题、字体高亮等颜色
+Bg 背景色
+base 网页的整体背景色
+nav 网页导航栏的颜色
+Text 字体颜色
+main 字体的主要颜色，用于正文
+muted 在「失效」按钮中字体的颜色
+invert 在彩色按钮中字体的颜色
+Fill 按钮或卡片的填充色，也是主题色
+main 主要填充色
+muted 「失效」按钮填充色，也是选中字体时的背景色
+*/
+@layer base {
+    :root {
+        --color-highlight: 102, 126, 234; /* 柔和蓝紫 */
+        --color-bg-back: 225, 225, 225; /* 微灰 */
+        --color-bg-base: 120, 140, 170; /* 温和浅灰 */
+        --color-bg-nav: 145, 170, 160; /* 更浅的灰紫 */
+        --color-text-main: 34, 34, 34; /* 深灰 */
+        --color-text-muted: 120, 120, 130; /* 中性灰 */
+        --color-text-invert: 255, 255, 255; /* 白色 */
+        --color-fill-main: 102, 126, 234; /* 柔和蓝紫 */
+        --color-fill-muted: 200, 210, 255; /* 浅蓝紫 */
+    }
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    .dark-theme {
+        --color-highlight: 127, 143, 244; /* 明亮蓝紫 */
+        --color-bg-back: 12, 12, 12; /* 接近纯黑 */
+        --color-bg-base: 28, 28, 36; /* 深灰蓝 */
+        --color-bg-nav: 38, 38, 50; /* 更浅的深灰 */
+        --color-text-main: 240, 240, 245; /* 浅灰白 */
+        --color-text-muted: 150, 150, 160; /* 灰白 */
+        --color-text-invert: 28, 28, 36; /* 深色 */
+        --color-fill-main: 127, 143, 244; /* 蓝紫 */
+        --color-fill-muted: 60, 70, 120; /* 深蓝紫 */
+    }
 }
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* 解决滚动条样式问题 */
+@layer base {
+    html {
+        scrollbar-gutter: auto !important;
+    }
 }
