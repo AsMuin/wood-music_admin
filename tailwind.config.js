@@ -17,7 +17,7 @@ export default {
             colors: {
                 lightBlue: '#04A5FF',
                 lightGray: '#6e6e6e',
-                base: withOpacityValue('--color-bg-base'),
+                base: withOpacityValue('--color-bg-base')
             },
             // 设置字体颜色基础类
             textColor: {
