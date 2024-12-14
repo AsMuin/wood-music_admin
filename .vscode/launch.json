@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "Launch Edge with Shared User Data",
+            "url": "http://localhost:5173", // Vite 默认本地服务地址
+            "webRoot": "${workspaceFolder}",
+            "userDataDir": "C:\\Users\\AsMuin\\Documents\\EdgeDebugData",
+            "preLaunchTask": "yarn: dev" // 使用已定义的 dev 命令
+        }
+    ]
+}
