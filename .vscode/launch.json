@@ -3,12 +3,14 @@
     "configurations": [
         {
             "type": "msedge",
+            "name": "Launch Microsoft Edge",
             "request": "launch",
-            "name": "Launch Edge with Shared User Data",
-            "url": "http://localhost:5173", // Vite 默认本地服务地址
-            "webRoot": "${workspaceFolder}",
+            "runtimeArgs": ["--remote-debugging-port=9222"],
+            "url": "http://localhost:5173",
             "userDataDir": "C:\\Users\\AsMuin\\Documents\\EdgeDebugData",
-            "preLaunchTask": "yarn: dev" // 使用已定义的 dev 命令
+            "presentation": {
+                "hidden": false
+            }
         }
     ]
 }

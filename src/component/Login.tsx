@@ -87,7 +87,7 @@ function Login({ visible, setVisible }: { visible: boolean; setVisible: (visible
                 setVisible(true);
             }
         }
-    }, [visible, reset]);
+    }, [visible, reset, setVisible]);
     return (
         <>
             <Dialog visible={visible} setVisible={setVisible}>
