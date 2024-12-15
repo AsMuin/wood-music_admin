@@ -10,10 +10,14 @@ interface FormProps<T> {
 interface FormContext<T extends FieldValues> {
     register: UseFormRegister<T>;
     errors: FieldErrors<T>;
+    isSubmitting: boolean;
+    reset: () => void;
 }
 
 const FormContext = createContext<FormContext<any>>({
     register: () => ({}) as any,
+    reset: () => {},
+    isSubmitting: false,
     errors: {}
 });
 
@@ -29,13 +33,16 @@ function Form<T extends FieldValues>({ formData, onSubmit, children }: React.Pro
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors, isSubmitting },
+        reset
     } = useForm<T>({
         defaultValues: formData as DefaultValues<T>
     });
 
     const ContextValue: FormContext<T> = {
         register,
+        reset,
+        isSubmitting,
         errors
     };
     return (
@@ -121,12 +128,20 @@ Form.FieldList = function FieldList({ fieldConfigList }: { fieldConfigList: Fiel
 };
 
 Form.SubmitButton = function SubmitButton({ text, children }: { children?: ReactNode; text: string }) {
+    const { isSubmitting } = useFormContext();
     if (children) {
         return children;
     }
     return (
-        <button type="submit" className="btn glass min-w-20 bg-green-600 text-xl text-orange-200 hover:text-orange-500">
-            {text}
+        <button type="submit" className="btn glass min-w-20 bg-green-600 text-xl text-orange-200 hover:text-orange-500" disabled={isSubmitting}>
+            {isSubmitting ? (
+                <>
+                    <span className="loading loading-spinner loading-md"></span>
+                    <span>处理中...</span>
+                </>
+            ) : (
+                text
+            )}
         </button>
     );
 };

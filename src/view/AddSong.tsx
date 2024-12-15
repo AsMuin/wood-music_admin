@@ -3,7 +3,7 @@ import { showMessage } from '@/component/MessageManager';
 import Form, { FieldProps, UploadFieldProps } from '@/component/UI/Form';
 import { addSong } from '@/service/api/song';
 interface AddSubmitProps {
-    song: File;
+    audio: File;
     image: File;
     name: string;
     desc: string;
@@ -17,7 +17,7 @@ function AddSong() {
     const addSongFormConfig: AddFormConfig = {
         upload: [
             {
-                key: 'song',
+                key: 'audio',
                 label: '上传歌曲',
                 uploadAccept: 'audio/*',
                 uploadBGImage: assets.upload_song,

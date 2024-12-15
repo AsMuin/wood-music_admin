@@ -66,7 +66,16 @@ export async function Request<T = any>(params: IRequestConfig, extraConfig?: IRe
 }
 
 const RequestConstructor =
-    <T>(config: AxiosRequestConfig) =>
-    <R>(params: T, extraConfig?: IRequestConfig) =>
-        Request<R>({ ...config, data: params }, extraConfig);
+    <T>(config: AxiosRequestConfig, beforeRequest?: (params: T, extraConfig?: IRequestConfig) => T | void) =>
+    <R>(params: T, extraConfig?: IRequestConfig) => {
+        let requestParamsCopy = structuredClone(params);
+        if (beforeRequest) {
+            const beforeRequestResult = beforeRequest(requestParamsCopy, extraConfig);
+            if (beforeRequestResult) {
+                requestParamsCopy = beforeRequestResult;
+            }
+        }
+        return Request<R>({ ...config, data: requestParamsCopy || params }, extraConfig);
+    };
+
 export default RequestConstructor;
