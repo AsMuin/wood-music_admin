@@ -28,9 +28,11 @@ const addSong = RequestConstructor<AddSongParams>(
             'Content-Type': 'multipart/form-data'
         }
     },
-    params => {
+   {
+    beforeRequest(params) {
         params.audio = (params.audio as FileList)[0];
         params.image = (params.image as FileList)[0];
     }
+   }
 );
 export { getSongList, addSong };

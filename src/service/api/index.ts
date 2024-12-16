@@ -68,17 +68,29 @@ export async function Request<T = any>(params: IRequestConfig, extraConfig?: IRe
     }
 }
 
+interface IRequestDataProcessing<T,R> {
+    beforeRequest?: (params: T, extraConfig?: IRequestConfig) => T | void;
+    afterResponse?: (response: IResponse<R>) => IResponse<any> | void;
+}
+
 const RequestConstructor =
-    <T>(config: AxiosRequestConfig, beforeRequest?: (params: T, extraConfig?: IRequestConfig) => T | void) =>
-    <R>(params: T, extraConfig?: IRequestConfig) => {
-        let requestParamsCopy = structuredClone(params);
-        if (beforeRequest) {
-            const beforeRequestResult = beforeRequest(requestParamsCopy, extraConfig);
+    <T=any,RD=any>(config: AxiosRequestConfig, requestDataProcessing?: IRequestDataProcessing<T,RD>) =>
+    <R>(requestParams: T, extraConfig?: IRequestConfig) => {
+        let requestParamsCopy = structuredClone(requestParams);
+        if (requestDataProcessing?.beforeRequest) {
+            const beforeRequestResult = requestDataProcessing.beforeRequest(requestParamsCopy, extraConfig);
             if (beforeRequestResult) {
                 requestParamsCopy = beforeRequestResult;
             }
         }
-        return Request<R>({ ...config, data: requestParamsCopy || params }, extraConfig);
+        if(requestDataProcessing?.afterResponse){
+            config.transformResponse = [requestDataProcessing.afterResponse];
+        }
+        if(config.method === 'get' || config.method === 'GET' || !config.method) {
+            return Request<R>({...config, params: requestParamsCopy || requestParams }, extraConfig);
+        }else{
+            return Request<R>({...config, data: requestParamsCopy || requestParams }, extraConfig);
+        }
     };
 
 export default RequestConstructor;
