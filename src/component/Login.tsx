@@ -112,7 +112,7 @@ function Login({ visible, setVisible }: { visible: boolean; setVisible: (visible
                         </span>
                     </div>
                     <div className="text-end">
-                        <button type="submit" className="btn glass relative top-5 mr-5 rounded-full px-6 text-lg hover:scale-105">
+                        <button type="submit" className="btn glass relative top-5 mr-5 rounded-full px-6 text-lg hover:scale-105" disabled={isSubmitting}>
                             {isSubmitting ? <span className="loading loading-spinner"></span> : '确定'}
                         </button>
                     </div>
