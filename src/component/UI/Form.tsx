@@ -1,5 +1,5 @@
 import { assets } from '@/assets/assets';
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext, useRef } from 'react';
 import { DefaultValues, FieldErrors, FieldValues, RegisterOptions, useForm, UseFormRegister } from 'react-hook-form';
 import FormError from './Error';
 
@@ -63,21 +63,48 @@ export interface UploadFieldProps {
 }
 
 Form.UploadFieldList = function UploadFieldList({ fieldConfigList }: { fieldConfigList: UploadFieldProps[] }) {
-    const { register, errors } = useFormContext();
     return (
         <div className="flex gap-8">
             {/* 文件上传区 */}
             {fieldConfigList.map(fieldItem => (
-                <label key={fieldItem.key}>
-                    <p className="text-center text-lg">{fieldItem.label}</p>
-                    <input type="file" hidden accept={fieldItem.uploadAccept} {...register(fieldItem.key, fieldItem.options)} />
-                    <img className="mx-auto w-24 cursor-pointer" src={fieldItem.uploadBGImage || assets.upload_area} alt="" />
-                    <FormError errorMessage={errors?.[fieldItem.key]?.message as string} />
-                </label>
+                <FormUploadItem key={fieldItem.key} fieldConfig={fieldItem} />
             ))}
         </div>
     );
 };
+
+function FormUploadItem({ fieldConfig }: { fieldConfig: UploadFieldProps }) {
+    const { register, errors } = useFormContext();
+    const imgEleRef = useRef<HTMLImageElement | null>(null);
+    function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = event => {
+                if (event.target?.result && typeof event.target.result === 'string') {
+                    const img = imgEleRef.current;
+                    if (img) {
+                        const fileType = file.type;
+                        if (fileType.startsWith('image/')) {
+                            img.src = (event.target.result as string) || assets.upload_added;
+                        } else {
+                            img.src = assets.upload_added;
+                        }
+                    }
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    return (
+        <label key={fieldConfig.key}>
+            <p className="text-center text-lg">{fieldConfig.label}</p>
+            <input type="file" hidden accept={fieldConfig.uploadAccept} {...register(fieldConfig.key, fieldConfig.options)} onChange={onFileChange} />
+            <img ref={imgEleRef} className="mx-auto max-h-24 w-24 cursor-pointer" src={fieldConfig.uploadBGImage || assets.upload_area} alt="" />
+            <FormError errorMessage={errors?.[fieldConfig.key]?.message as string} />
+        </label>
+    );
+}
 
 export interface FieldProps {
     key: string;

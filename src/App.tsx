@@ -20,7 +20,7 @@ function App() {
                 <Sidebar />
                 <div className="h-screen flex-1 overflow-y-scroll bg-[#f3fff7]">
                     <Navbar />
-                    <div className="pl-5 pt-8 sm:pl-12 sm:pt-12">
+                    <div className="px-5 pt-8 sm:pl-12 sm:pt-12">
                         <Suspense fallback={<div>Loading...</div>}>
                             <Outlet />
                         </Suspense>
