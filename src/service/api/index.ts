@@ -9,7 +9,7 @@ interface IResponse<T = any> {
 export interface IRequestConfig extends AxiosRequestConfig {
     toastError?: boolean;
 }
-export interface IResponseParams<T = any, D = any> extends AxiosResponse<T,D> {
+export interface IResponseParams<T = any, D = any> extends AxiosResponse<T, D> {
     config: InternalAxiosRequestConfig & IRequestConfig;
 }
 const axiosInstance = axios.create({
@@ -50,7 +50,7 @@ axiosInstance.interceptors.response.use(async (response: IResponseParams<IRespon
         } else {
             const toastError = response.config.toastError ?? true;
             // 服务端响应了数据,但是处理结果是失败的
-            if(toastError){
+            if (toastError) {
                 showMessage({ type: 'error', message: data.message });
             }
             return Promise.reject(data.message);
@@ -61,11 +61,11 @@ axiosInstance.interceptors.response.use(async (response: IResponseParams<IRespon
     }
 });
 
-export async function Request<T = any>(params: IRequestConfig, extraConfig?: IRequestConfig): Promise<IResponse<T>> {
+export async function Request<T = any>(requestConfig: IRequestConfig, extraConfig?: IRequestConfig): Promise<IResponse<T>> {
     try {
-        const Response = await axiosInstance.request<IResponse<T>>({ ...extraConfig, ...params });
+        const Response = await axiosInstance.request<IResponse<T>>({ ...extraConfig, ...requestConfig });
         return Response.data;
-    } catch (e:any) {
+    } catch (e: any) {
         // 某种原因请求发送失败 比如网络断开
         console.error(e);
         showMessage({ type: 'error', message: e.message });
@@ -73,13 +73,13 @@ export async function Request<T = any>(params: IRequestConfig, extraConfig?: IRe
     }
 }
 
-interface IRequestDataProcessing<T,R> {
+interface IRequestDataProcessing<T, R> {
     beforeRequest?: (params: T, extraConfig?: IRequestConfig) => T | void;
     afterResponse?: (response: IResponse<R>) => IResponse<any> | void;
 }
 
 const RequestConstructor =
-    <T=any,RD=any>(config: IRequestConfig, requestDataProcessing?: IRequestDataProcessing<T,RD>) =>
+    <T = any, RD = any>(config: IRequestConfig, requestDataProcessing?: IRequestDataProcessing<T, RD>) =>
     <R>(requestParams: T, extraConfig?: IRequestConfig) => {
         let requestParamsCopy = structuredClone(requestParams);
         if (requestDataProcessing?.beforeRequest) {
@@ -88,13 +88,13 @@ const RequestConstructor =
                 requestParamsCopy = beforeRequestResult;
             }
         }
-        if(requestDataProcessing?.afterResponse){
+        if (requestDataProcessing?.afterResponse) {
             config.transformResponse = [requestDataProcessing.afterResponse];
         }
-        if(config.method === 'get' || config.method === 'GET' || !config.method) {
-            return Request<R>({...config, params: requestParamsCopy || requestParams }, extraConfig);
-        }else{
-            return Request<R>({...config, data: requestParamsCopy || requestParams }, extraConfig);
+        if (config.method === 'get' || config.method === 'GET' || !config.method) {
+            return Request<R>({ ...config, params: requestParamsCopy || requestParams }, extraConfig);
+        } else {
+            return Request<R>({ ...config, data: requestParamsCopy || requestParams }, extraConfig);
         }
     };
 
