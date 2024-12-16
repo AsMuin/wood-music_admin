@@ -9,7 +9,9 @@ interface IResponse<T = any> {
 export interface IRequestConfig extends AxiosRequestConfig {
     toastError?: boolean;
 }
-
+export interface IResponseParams<T = any, D = any> extends AxiosResponse<T,D> {
+    config: InternalAxiosRequestConfig & IRequestConfig;
+}
 const axiosInstance = axios.create({
     baseURL: '/api'
 });
@@ -37,7 +39,7 @@ axiosInstance.interceptors.request.use(async (config: InternalAxiosRequestConfig
     }
 });
 
-axiosInstance.interceptors.response.use(async (response: AxiosResponse<IResponse, any>) => {
+axiosInstance.interceptors.response.use(async (response: IResponseParams<IResponse, any>) => {
     try {
         const { data } = response;
         if (data.success) {
@@ -46,8 +48,11 @@ axiosInstance.interceptors.response.use(async (response: AxiosResponse<IResponse
             }
             return response;
         } else {
+            const toastError = response.config.toastError ?? true;
             // 服务端响应了数据,但是处理结果是失败的
-            showMessage({ type: 'error', message: data.message });
+            if(toastError){
+                showMessage({ type: 'error', message: data.message });
+            }
             return Promise.reject(data.message);
         }
     } catch (e: any) {
@@ -74,7 +79,7 @@ interface IRequestDataProcessing<T,R> {
 }
 
 const RequestConstructor =
-    <T=any,RD=any>(config: AxiosRequestConfig, requestDataProcessing?: IRequestDataProcessing<T,RD>) =>
+    <T=any,RD=any>(config: IRequestConfig, requestDataProcessing?: IRequestDataProcessing<T,RD>) =>
     <R>(requestParams: T, extraConfig?: IRequestConfig) => {
         let requestParamsCopy = structuredClone(requestParams);
         if (requestDataProcessing?.beforeRequest) {
