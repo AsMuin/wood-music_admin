@@ -27,7 +27,7 @@ function MessageManager() {
         const { position = 'topCenter' } = message;
         setMessageList(prev => ({
             ...prev,
-            [position]: [...prev[position], { id: (Math.random() + Date.now()).toString(36).substr(2, 9), ...message }]
+            [position]: [...prev[position], { id: (Math.random() + Date.now()).toString(36).slice(2, 9), ...message }]
         }));
     }, []);
     const removeMessage = useCallback((position: Position, id: string) => {
