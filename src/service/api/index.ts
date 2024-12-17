@@ -20,9 +20,12 @@ const axiosInstance = axios.create({
     baseURL: '/api'
 });
 
+//无需登录验证的接口
+const noAuthRequestList = ['/user/login', '/user/register', '/song/list'];
+
 axiosInstance.interceptors.request.use(async (config: InternalAxiosRequestConfig & IRequestConfig) => {
     try {
-        if (config.url === '/user/login' || config.url === '/user/register' || config.url === '/song/list') {
+        if (noAuthRequestList.includes(config.url||'')) {
             return config;
         } else {
             const token = localStorage.getItem('token');
