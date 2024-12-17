@@ -92,7 +92,7 @@ function Login({ visible, setVisible }: { visible: boolean; setVisible: (visible
         <>
             <Dialog visible={visible} setVisible={setVisible}>
                 <h3 className="mb-2 text-2xl font-bold text-invert duration-500 hover:text-main">{type === 'login' ? '登录' : '注册'}</h3>
-                <form className="flex w-full flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+                <form className="flex w-full flex-col gap-1.5" onSubmit={handleSubmit(onSubmit)}>
                     {formElement.map(item => (
                         <div className="" key={item.key}>
                             <input

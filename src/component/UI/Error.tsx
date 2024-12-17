@@ -3,7 +3,7 @@ interface ErrorProps {
 }
 function Error({ errorMessage }: ErrorProps) {
     return (
-        <p className={`transition-all duration-300 ${errorMessage ? 'scale-100 text-red-500' : 'scale-0 text-transparent'}`}>{errorMessage || ''}</p>
+        <p className={`transition-all duration-300 whitespace-pre-wrap ${errorMessage ? 'scale-100 text-red-500 visible' : 'scale-50 opcity-0 invisible'}`}>{errorMessage || ' '}</p>
     );
 }
 
