@@ -13,32 +13,17 @@ function StatusButton(props: StatusButtonProps) {
     switch (props.status) {
         case 'loading':
             return (
-                <button
-                    type={props.type}
-                    className={`btn transition-all duration-500 ${props.className}`}
-                    disabled={props.disabled}>
+                <button type={props.type} className={`btn transition-all duration-500 ${props.className}`} disabled={props.disabled}>
                     {props.loadingText || ''}
                     <span className="loading loading-spinner loading-md"></span>
                 </button>
             );
         case 'success':
             return (
-                <button
-                    type={props.type}
-                    className={`btn btn-success transition-all duration-500 ${props.className}`}
-                    disabled={props.disabled}>
+                <button type={props.type} className={`btn btn-success transition-all duration-500 ${props.className}`} disabled={props.disabled}>
                     {props.successText || ''}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 shrink-0 stroke-current"
-                        fill="none"
-                        viewBox="0 0 24 24">
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </button>
             );
@@ -50,11 +35,7 @@ function StatusButton(props: StatusButtonProps) {
                     onClick={props.onClick}
                     disabled={props.disabled}>
                     {props.errorText || ''}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6 shrink-0 stroke-current"
-                        fill="none"
-                        viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"

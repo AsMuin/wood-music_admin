@@ -41,23 +41,12 @@ function Dialog(props: PropsWithChildren<IModalProps>) {
     return (
         <dialog ref={dialogRef} className="modal">
             <div className="modal-box bg-muted/95">
-                {typeof props.children === 'string' ? (
-                    <p className="text-xl">{props.children}</p>
-                ) : (
-                    <>{props.children}</>
-                )}
+                {typeof props.children === 'string' ? <p className="text-xl">{props.children}</p> : <>{props.children}</>}
                 <div className={`modal-action ${!props.isCancel && !props.isConfirm ? 'mt-0' : ''}`}>
                     <form method="dialog">
-                        <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2 text-invert">
-                            ✕
-                        </button>
+                        <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2 text-invert">✕</button>
                     </form>
-                    <StatusButton
-                        defaultText="confirm"
-                        errorText="出错了,点击重试"
-                        status={btnStatus}
-                        onClick={onConfirm}
-                    />
+                    <StatusButton defaultText="confirm" errorText="出错了,点击重试" status={btnStatus} onClick={onConfirm} />
                 </div>
             </div>
         </dialog>
