@@ -25,7 +25,7 @@ const noAuthRequestList = ['/user/login', '/user/register', '/song/list'];
 
 axiosInstance.interceptors.request.use(async (config: InternalAxiosRequestConfig & IRequestConfig) => {
     try {
-        if (noAuthRequestList.includes(config.url||'')) {
+        if (noAuthRequestList.includes(config.url || '')) {
             return config;
         } else {
             const token = localStorage.getItem('token');
@@ -41,7 +41,7 @@ axiosInstance.interceptors.request.use(async (config: InternalAxiosRequestConfig
         }
     } catch (e: any) {
         console.error(e);
-        showMessage({ type: 'error', message: e.message });
+        showMessage({ type: 'error', message: e.message || e });
         return Promise.reject(e);
     }
 });
@@ -75,7 +75,7 @@ export async function Request<T = any>(requestConfig: IRequestConfig, extraConfi
     } catch (e: any) {
         // 某种原因请求发送失败 比如网络断开
         console.error(e);
-        showMessage({ type: 'error', message: e.message });
+        // showMessage({ type: 'error', message: e.message || e });
         return Promise.reject(e);
     }
 }

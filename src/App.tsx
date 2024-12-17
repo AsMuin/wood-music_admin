@@ -17,7 +17,7 @@ function App() {
         <>
             <MessageManager />
             <div className="flex min-h-screen items-start">
-                <Sidebar />
+                <Sidebar loginVisible={loginVisible} setLoginVisible={setLoginVisible} />
                 <div className="h-screen flex-1 overflow-y-scroll bg-[#f3fff7]">
                     <Navbar />
                     <div className="px-5 pt-8 sm:pl-12 sm:pt-12">

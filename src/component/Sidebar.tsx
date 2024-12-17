@@ -1,7 +1,8 @@
 import { assets } from '@/assets/assets';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
-function Sidebar() {
+function Sidebar({ loginVisible, setLoginVisible }: { loginVisible: boolean; setLoginVisible: (value: boolean) => void }) {
+    const navigator = useNavigate();
     const sidebarConfig = [
         {
             name: '添加歌曲',
@@ -25,8 +26,13 @@ function Sidebar() {
         }
     ];
 
+    function logout() {
+        localStorage.removeItem('token');
+        navigator('/');
+        setLoginVisible(true);
+    }
     return (
-        <div className="min-h-screen bg-[#003a10] pl-[4vw]">
+        <div className="relative min-h-screen bg-[#003a10] pl-[4vw]">
             <img className="mt-5 hidden w-[max(10vw,100px)] sm:block" src={assets.logo} alt="" />
             <img className="mr-5 mt-5 block w-[max(5vw,50px)] sm:hidden" src={assets.logo_small} alt="" />
             <div className="mt-10 flex flex-col gap-5">
@@ -43,6 +49,11 @@ function Sidebar() {
                     <img className="" src={assets.add_song} alt="" />
                     <p className="hidden sm:block">添加歌曲</p>
                 </div> */}
+            </div>
+            <div
+                onClick={logout}
+                className="absolute bottom-2 right-3 cursor-pointer text-center text-xl font-semibold text-gray-500 duration-300 hover:text-red-500 md:text-2xl">
+                {loginVisible ? '登录' : '注销'}
             </div>
         </div>
     );

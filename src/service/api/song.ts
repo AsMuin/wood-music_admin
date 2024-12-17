@@ -35,4 +35,14 @@ const addSong = RequestConstructor<AddSongParams>(
         }
     }
 );
-export { getSongList, addSong };
+
+interface RemoveSongParams {
+    id: string;
+}
+
+const removeSong = RequestConstructor<RemoveSongParams>({
+    method: 'post',
+    url: `${BASEURL}/delete`
+});
+
+export { getSongList, addSong, removeSong };

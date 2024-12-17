@@ -1,10 +1,11 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Dialog from './UI/Dialog';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { userLogin, userRegister } from '@/service/api/user';
 import useToggle from '@/Hooks/state/useToggle';
 import { showMessage } from './MessageManager';
 import FormError from './UI/Error';
+import StatusButton from './UI/StatusButton';
 interface IFormSubmit {
     name: string;
     password: string;
@@ -19,21 +20,28 @@ function Login({ visible, setVisible }: { visible: boolean; setVisible: (visible
         formState: { errors, isSubmitting }
     } = useForm<IFormSubmit>();
     const [type, { toggle }] = useToggle<TFormType>('login', 'register');
+    const [submitError, setSubmitError] = useState('');
     const onSubmit: SubmitHandler<IFormSubmit> = async (data: IFormSubmit) => {
         try {
+            setSubmitError('');
             console.log(data);
             if (type === 'login') {
-                await userLogin(data);
+                await userLogin(data, {
+                    toastError: false
+                });
                 setVisible(false);
                 showMessage({ type: 'success', message: '登录成功' });
             } else {
-                await userRegister(data);
+                await userRegister(data, {
+                    toastError: false
+                });
                 showMessage({ type: 'success', message: '注册成功, 请登录' });
                 reset();
                 toggle();
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
+            setSubmitError(error.message || error);
         }
     };
     const loginConfig = [
@@ -112,9 +120,20 @@ function Login({ visible, setVisible }: { visible: boolean; setVisible: (visible
                         </span>
                     </div>
                     <div className="text-end">
-                        <button type="submit" className="btn glass relative top-5 mr-5 rounded-full px-6 text-lg hover:scale-105" disabled={isSubmitting}>
+                        {/* <button
+                            type="submit"
+                            className="btn glass relative top-5 mr-5 rounded-full px-6 text-lg hover:scale-105"
+                            disabled={isSubmitting}>
                             {isSubmitting ? <span className="loading loading-spinner"></span> : '确定'}
-                        </button>
+                        </button> */}
+                        <StatusButton
+                            className="relative top-5 mr-5 rounded-full px-6 text-lg hover:scale-105"
+                            type="submit"
+                            status={submitError ? 'error' : isSubmitting ? 'loading' : 'default'}
+                            defaultText="确定"
+                            loadingText="登录中"
+                            errorText={submitError}
+                        />
                     </div>
                 </form>
             </Dialog>
