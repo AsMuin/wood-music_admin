@@ -1,6 +1,6 @@
 import { assets } from '@/assets/assets';
 import { showMessage } from '@/component/MessageManager';
-import Form, { FieldProps, UploadFieldProps } from '@/component/UI/Form';
+import Form, { FormConfig } from '@/component/UI/Form';
 import { addSong } from '@/service/api/song';
 interface AddSubmitProps {
     audio: File;
@@ -9,12 +9,9 @@ interface AddSubmitProps {
     desc: string;
     album: string;
 }
-interface AddFormConfig {
-    upload: UploadFieldProps[];
-    input: FieldProps[];
-}
+
 function AddSong() {
-    const addSongFormConfig: AddFormConfig = {
+    const addSongFormConfig: FormConfig = {
         upload: [
             {
                 key: 'audio',
@@ -71,7 +68,7 @@ function AddSong() {
             }
         ]
     };
-    async function onSubmit(data: AddSubmitProps) {
+    async function onSubmit(data: AddSubmitProps, reset: (data?: AddSubmitProps) => void) {
         try {
             console.log(data);
             await addSong(data);
@@ -80,6 +77,7 @@ function AddSong() {
                 message: '添加成功',
                 position: 'topEnd'
             });
+            reset();
         } catch (error: any) {
             console.error(error);
             showMessage({
@@ -93,7 +91,7 @@ function AddSong() {
         <Form onSubmit={onSubmit}>
             <Form.UploadFieldList fieldConfigList={addSongFormConfig.upload} />
             <Form.FieldList fieldConfigList={addSongFormConfig.input} />
-            <Form.SubmitButton text="确认提交" />
+            <Form.SubmitButton defaultText="确认提交" />
         </Form>
     );
 }

@@ -1,17 +1,23 @@
 import { assets } from '@/assets/assets';
-import { createContext, ReactNode, useContext, useRef } from 'react';
+import { createContext, useContext, useRef } from 'react';
 import { DefaultValues, FieldErrors, FieldValues, RegisterOptions, useForm, UseFormRegister } from 'react-hook-form';
 import FormError from './Error';
+import StatusButton from './StatusButton';
 
 interface FormProps<T> {
     formData?: T;
-    onSubmit: (data: T) => void;
+    onSubmit: (data: T, reset: (data?: T) => void) => void;
 }
 interface FormContext<T extends FieldValues> {
     register: UseFormRegister<T>;
     errors: FieldErrors<T>;
     isSubmitting: boolean;
-    reset: () => void;
+    reset: (data: T) => void;
+}
+
+export interface FormConfig {
+    upload: UploadFieldProps[];
+    input: FieldProps[];
 }
 
 const FormContext = createContext<FormContext<any>>({
@@ -47,7 +53,7 @@ function Form<T extends FieldValues>({ formData, onSubmit, children }: React.Pro
     };
     return (
         <FormContext.Provider value={ContextValue}>
-            <form className="flex flex-col items-start gap-8 text-gray-600" onSubmit={handleSubmit(onSubmit)}>
+            <form className="flex flex-col items-start gap-8 text-gray-600" onSubmit={handleSubmit(data => onSubmit(data, reset))}>
                 {children}
             </form>
         </FormContext.Provider>
@@ -76,8 +82,10 @@ Form.UploadFieldList = function UploadFieldList({ fieldConfigList }: { fieldConf
 function FormUploadItem({ fieldConfig }: { fieldConfig: UploadFieldProps }) {
     const { register, errors } = useFormContext();
     const imgEleRef = useRef<HTMLImageElement | null>(null);
+
     function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
+        const originalImage = imgEleRef.current?.src || assets.upload_area;
         if (file) {
             const reader = new FileReader();
             reader.onload = event => {
@@ -94,12 +102,22 @@ function FormUploadItem({ fieldConfig }: { fieldConfig: UploadFieldProps }) {
                 }
             };
             reader.readAsDataURL(file);
+        } else {
+            const img = imgEleRef.current;
+            if (img) {
+                img.src = originalImage;
+            }
         }
     }
     return (
         <label key={fieldConfig.key}>
             <p className="text-center text-lg">{fieldConfig.label}</p>
-            <input type="file" hidden accept={fieldConfig.uploadAccept} {...register(fieldConfig.key, fieldConfig.options)} onChange={onFileChange} />
+            <input
+                type="file"
+                hidden
+                accept={fieldConfig.uploadAccept}
+                {...register(fieldConfig.key, { ...fieldConfig.options, onChange: onFileChange })}
+            />
             <img ref={imgEleRef} className="mx-auto max-h-24 w-24 cursor-pointer" src={fieldConfig.uploadBGImage || assets.upload_area} alt="" />
             <FormError errorMessage={errors?.[fieldConfig.key]?.message as string} />
         </label>
@@ -154,22 +172,24 @@ Form.FieldList = function FieldList({ fieldConfigList }: { fieldConfigList: Fiel
     );
 };
 
-Form.SubmitButton = function SubmitButton({ text, children }: { children?: ReactNode; text: string }) {
+interface FormSubmitButtonProps {
+    defaultText?: string;
+    loadingText?: string;
+}
+Form.SubmitButton = function SubmitButton({ defaultText, children, loadingText }: React.PropsWithChildren<FormSubmitButtonProps>) {
     const { isSubmitting } = useFormContext();
     if (children) {
         return children;
     }
     return (
-        <button type="submit" className="btn glass min-w-20 bg-green-600 text-xl text-orange-200 hover:text-orange-500" disabled={isSubmitting}>
-            {isSubmitting ? (
-                <>
-                    <span className="loading loading-spinner loading-md"></span>
-                    <span>处理中...</span>
-                </>
-            ) : (
-                text
-            )}
-        </button>
+        <StatusButton
+            type="submit"
+            className="glass min-w-20 bg-green-600 text-xl text-orange-200 hover:text-orange-500"
+            disabled={isSubmitting}
+            loadingText={loadingText || '处理中'}
+            defaultText={defaultText || '确定'}
+            status={isSubmitting ? 'loading' : 'default'}
+        />
     );
 };
 export default Form;
