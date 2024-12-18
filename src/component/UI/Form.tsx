@@ -1,6 +1,6 @@
 import { assets } from '@/assets/assets';
-import { createContext, useContext, useRef } from 'react';
-import { DefaultValues, FieldErrors, FieldValues, RegisterOptions, useForm, UseFormRegister } from 'react-hook-form';
+import { createContext, useContext, useEffect, useRef } from 'react';
+import { DefaultValues, FieldErrors, FieldValues, RegisterOptions, useForm, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import FormError from './Error';
 import StatusButton from './StatusButton';
 
@@ -13,6 +13,7 @@ interface FormContext<T extends FieldValues> {
     errors: FieldErrors<T>;
     isSubmitting: boolean;
     reset: (data: T) => void;
+    watch: UseFormWatch<T>;
 }
 
 export interface FormConfig {
@@ -24,7 +25,8 @@ const FormContext = createContext<FormContext<any>>({
     register: () => ({}) as any,
     reset: () => {},
     isSubmitting: false,
-    errors: {}
+    errors: {},
+    watch: () => ({}) as any
 });
 
 function useFormContext<T extends FieldValues>() {
@@ -40,6 +42,7 @@ function Form<T extends FieldValues>({ formData, onSubmit, children }: React.Pro
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
+        watch,
         reset
     } = useForm<T>({
         defaultValues: formData as DefaultValues<T>
@@ -48,6 +51,7 @@ function Form<T extends FieldValues>({ formData, onSubmit, children }: React.Pro
     const ContextValue: FormContext<T> = {
         register,
         reset,
+        watch,
         isSubmitting,
         errors
     };
@@ -80,44 +84,80 @@ Form.UploadFieldList = function UploadFieldList({ fieldConfigList }: { fieldConf
 };
 
 function FormUploadItem({ fieldConfig }: { fieldConfig: UploadFieldProps }) {
-    const { register, errors } = useFormContext();
+    const { register, errors, watch } = useFormContext();
     const imgEleRef = useRef<HTMLImageElement | null>(null);
 
-    function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0];
-        const originalImage = imgEleRef.current?.src || assets.upload_area;
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = event => {
-                if (event.target?.result && typeof event.target.result === 'string') {
-                    const img = imgEleRef.current;
-                    if (img) {
-                        const fileType = file.type;
-                        if (fileType.startsWith('image/')) {
-                            img.src = (event.target.result as string) || assets.upload_added;
-                        } else {
-                            img.src = assets.upload_added;
-                        }
-                    }
-                }
-            };
-            reader.readAsDataURL(file);
-        } else {
+    useEffect(() => {
+        const subscription = watch((value, { name }) => {
             const img = imgEleRef.current;
-            if (img) {
-                img.src = originalImage;
+            if (!img) {
+                // 不存在图片标签自然不需要处理
+                return;
             }
-        }
-    }
+            //(reset执行时全部为undefined)
+            if (name) {
+                //表单数据正常更新的情况下
+
+                // 判断是否存在值以及当前字段是否匹配
+                const isCurrentField = name === fieldConfig.key;
+                if (value && isCurrentField) {
+                    const file = value?.[name]?.[0];
+                    const reader = new FileReader();
+                    reader.onload = event => {
+                        if (event.target?.result && typeof event.target.result === 'string') {
+                            const fileType = file.type;
+                            if (fileType.startsWith('image/')) {
+                                img.src = (event.target.result as string) || assets.upload_added;
+                            } else {
+                                img.src = assets.upload_added;
+                            }
+                        }
+                        reader.onloadend = () => {
+                            reader.onload = null;
+                            reader.onloadend = null;
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                // 表单重置
+                img.src = fieldConfig.uploadBGImage || assets.upload_area;
+            }
+        });
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [watch, fieldConfig.uploadBGImage, fieldConfig.key]);
+    // function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    //     const file = e.target.files?.[0];
+    //     const originalImage = imgEleRef.current?.src || assets.upload_area;
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.onload = event => {
+    //             if (event.target?.result && typeof event.target.result === 'string') {
+    //                 const img = imgEleRef.current;
+    //                 if (img) {
+    //                     const fileType = file.type;
+    //                     if (fileType.startsWith('image/')) {
+    //                         img.src = (event.target.result as string) || assets.upload_added;
+    //                     } else {
+    //                         img.src = assets.upload_added;
+    //                     }
+    //                 }
+    //             }
+    //         };
+    //         reader.readAsDataURL(file);
+    //     } else {
+    //         const img = imgEleRef.current;
+    //         if (img) {
+    //             img.src = originalImage;
+    //         }
+    //     }
+    // }
     return (
         <label key={fieldConfig.key}>
             <p className="text-center text-lg">{fieldConfig.label}</p>
-            <input
-                type="file"
-                hidden
-                accept={fieldConfig.uploadAccept}
-                {...register(fieldConfig.key, { ...fieldConfig.options, onChange: onFileChange })}
-            />
+            <input type="file" hidden accept={fieldConfig.uploadAccept} {...register(fieldConfig.key, fieldConfig.options)} />
             <img ref={imgEleRef} className="mx-auto max-h-24 w-24 cursor-pointer" src={fieldConfig.uploadBGImage || assets.upload_area} alt="" />
             <FormError errorMessage={errors?.[fieldConfig.key]?.message as string} />
         </label>
