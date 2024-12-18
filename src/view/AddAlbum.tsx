@@ -1,8 +1,10 @@
 import { assets } from '@/assets/assets';
+import { showMessage } from '@/component/MessageManager';
 import Form, { FormConfig } from '@/component/UI/Form';
+import { addAlbum } from '@/service/api/album';
 
 interface AddAlbumParams {
-    color: string;
+    bgColor: string;
     desc: string;
     name: string;
     image: File;
@@ -22,7 +24,7 @@ function AddAlbum() {
         ],
         input: [
             {
-                key: 'color',
+                key: 'bgColor',
                 label: '专辑背景颜色',
                 placeholder: '请输入专辑颜色',
                 type: 'text',
@@ -50,14 +52,24 @@ function AddAlbum() {
             }
         ]
     };
-    async function onSubmit(data: AddAlbumParams) {
-        console.log(data);
+    async function onSubmit(data: AddAlbumParams, reset: () => void) {
+        try {
+            console.log(data);
+            await addAlbum(data);
+            showMessage({
+                type: 'success',
+                message: '添加成功'
+            });
+            reset();
+        } catch (error) {
+            console.log(error);
+        }
     }
     return (
         <Form onSubmit={onSubmit}>
             <Form.UploadFieldList fieldConfigList={formConfig.upload} />
             <Form.FieldList fieldConfigList={formConfig.input} />
-            <Form.SubmitButton defaultText="提交" />
+            <Form.SubmitButton defaultText="提交" loadingText="处理中" />
         </Form>
     );
 }
