@@ -54,6 +54,7 @@ interface TableRowProps<T> {
     rowData: T;
     index: number;
 }
+
 function TableRow<T>({ columns, rowData, index }: TableRowProps<T>) {
     return (
         <tr className="hover:bg-slate-100">
@@ -69,6 +70,7 @@ function TableRow<T>({ columns, rowData, index }: TableRowProps<T>) {
         </tr>
     );
 }
+
 interface TableRowCellProps<T> {
     rowData: T;
     value: T[keyof T];
@@ -76,6 +78,7 @@ interface TableRowCellProps<T> {
     render?: (value: T[keyof T], rowData: T, index: number) => React.ReactNode;
     children?: (value: T[keyof T], rowData: T, index: number) => React.ReactNode;
 }
+
 function TableRowCell<T>({ render, rowData, value, index, children }: TableRowCellProps<T>) {
     if (children) {
         return <td>{children(value, rowData, index)}</td>;
@@ -85,4 +88,5 @@ function TableRowCell<T>({ render, rowData, value, index, children }: TableRowCe
         return <td>{JSON.stringify(value)}</td>;
     }
 }
+
 export default Table;
