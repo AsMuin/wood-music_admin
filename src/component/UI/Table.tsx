@@ -25,11 +25,9 @@ function Table<T>({ columns, dataSource, isLoading = false, isError = false }: T
                 </thead>
                 <tbody>
                     {isLoading ? (
-                        <>
-                            <div className="grid h-full place-content-center">
-                                <span className="loading loading-dots w-32"></span>
-                            </div>
-                        </>
+                        <div className="grid h-full place-content-center">
+                            <span className="loading loading-dots w-32"></span>
+                        </div>
                     ) : isError ? (
                         <div className="grid h-full place-content-center">
                             <span className="text-center text-3xl font-bold text-red-500 drop-shadow-md">请求数据出现了问题</span>
