@@ -15,28 +15,30 @@ interface TableConfigProps<T> {
 function Table<T>({ columns, dataSource, isLoading = false, isError = false }: TableConfigProps<T>) {
     return (
         <div className="overflow-x-auto">
-            <table className="table rounded-md border shadow-md">
-                <thead>
-                    <tr>
-                        {columns.map(column => (
-                            <TableHeader key={column.key as string | number} render={column.header} />
+            {isLoading ? (
+                <div className="grid h-full place-content-center">
+                    <span className="loading loading-dots w-32"></span>
+                </div>
+            ) : isError ? (
+                <div className="grid h-full place-content-center">
+                    <span className="text-center text-3xl font-bold text-red-500 drop-shadow-md">请求数据出现了问题</span>
+                </div>
+            ) : (
+                <table className="table rounded-md border shadow-md">
+                    <thead>
+                        <tr>
+                            {columns.map(column => (
+                                <TableHeader key={column.key as string | number} render={column.header} />
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {dataSource.map((rowData, index) => (
+                            <TableRow key={index} columns={columns} rowData={rowData} index={index} />
                         ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {isLoading ? (
-                        <div className="grid h-full place-content-center">
-                            <span className="loading loading-dots w-32"></span>
-                        </div>
-                    ) : isError ? (
-                        <div className="grid h-full place-content-center">
-                            <span className="text-center text-3xl font-bold text-red-500 drop-shadow-md">请求数据出现了问题</span>
-                        </div>
-                    ) : (
-                        dataSource.map((rowData, index) => <TableRow key={index} columns={columns} rowData={rowData} index={index} />)
-                    )}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            )}
         </div>
     );
 }
