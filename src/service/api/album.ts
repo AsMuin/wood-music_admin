@@ -29,4 +29,21 @@ const addAlbum = RequestConstructor<AddAlbumParams>(
     }
 );
 
-export { addAlbum };
+interface GetAlbumParams {
+    pageIndex: number;
+    pageSize: number;
+}
+const getAlbumList = RequestConstructor<GetAlbumParams>({
+    method: 'get',
+    url: `${BASEURL}/list`
+});
+
+interface DeleteAlbumParams {
+    id: string;
+}
+
+const deleteAlbum = RequestConstructor<DeleteAlbumParams>({
+    method: 'post',
+    url: `${BASEURL}/delete`
+});
+export { addAlbum, getAlbumList, deleteAlbum };

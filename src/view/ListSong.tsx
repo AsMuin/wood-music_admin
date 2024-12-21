@@ -28,7 +28,7 @@ function ListSong() {
     const columns = [
         {
             key: 'image',
-            header: '图片',
+            header: '歌曲封面',
             render: (value: string) => <img className="max-h-14 w-12" src={value} alt="" />
         },
         {
