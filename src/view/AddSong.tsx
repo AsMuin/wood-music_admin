@@ -1,7 +1,11 @@
 import { assets } from '@/assets/assets';
 import { showMessage } from '@/component/MessageManager';
 import Form, { FormConfig } from '@/component/UI/Form';
+import { IQueryList } from '@/service/api';
+import { getAlbumList } from '@/service/api/album';
 import { addSong } from '@/service/api/song';
+import { useEffect, useState } from 'react';
+import { IAlbum } from './ListAlbum';
 interface AddSubmitProps {
     audio: File;
     image: File;
@@ -68,6 +72,38 @@ function AddSong() {
             }
         ]
     };
+    const [formConfig, setFormConfig] = useState<FormConfig>(addSongFormConfig);
+
+    useEffect(() => {
+        const albumResponse = getAlbumList<IQueryList<IAlbum[]>>({ pageIndex: 1, pageSize: 100 });
+        albumResponse.then(response => {
+            if (response.data) {
+                const choices = response.data.itemList.map(album => ({
+                    value: album.name,
+                    label: album.name
+                }));
+                setFormConfig(prevConfig => ({
+                    ...prevConfig,
+                    input: prevConfig.input.map(input => {
+                        if (input.key === 'album') {
+                            return {
+                                ...input,
+                                choices: [
+                                    {
+                                        value: 'none',
+                                        label: '无'
+                                    },
+                                    ...choices
+                                ]
+                            };
+                        }
+                        return input;
+                    })
+                }));
+            }
+        });
+    }, []);
+
     async function onSubmit(data: AddSubmitProps, reset: (data?: AddSubmitProps) => void) {
         try {
             console.log(data);
@@ -89,8 +125,8 @@ function AddSong() {
     }
     return (
         <Form onSubmit={onSubmit}>
-            <Form.UploadFieldList fieldConfigList={addSongFormConfig.upload} />
-            <Form.FieldList fieldConfigList={addSongFormConfig.input} />
+            <Form.UploadFieldList fieldConfigList={formConfig.upload} />
+            <Form.FieldList fieldConfigList={formConfig.input} />
             <Form.SubmitButton defaultText="确认提交" />
         </Form>
     );
