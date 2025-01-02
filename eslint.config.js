@@ -7,12 +7,14 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import reactPlugin from 'eslint-plugin-react';
 
 export default tsEslint.config(
-    { ignores: ['dist'] },
+    {
+        ignores: ['node_modules', 'dist', 'public']
+    },
     {
         extends: [js.configs.recommended, ...tsEslint.configs.recommended],
         files: ['**/*.{ts,tsx}'],
         languageOptions: {
-            ecmaVersion: 2020,
+            ecmaVersion: 'latest',
             globals: globals.browser
         },
         plugins: {
