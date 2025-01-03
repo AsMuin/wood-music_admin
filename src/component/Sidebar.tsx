@@ -1,5 +1,5 @@
 import { assets } from '@/assets/assets';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router';
 
 function Sidebar({ loginVisible, setLoginVisible }: { loginVisible: boolean; setLoginVisible: (value: boolean) => void }) {
     const navigator = useNavigate();

@@ -1,6 +1,6 @@
 import App from '@/App';
 import { lazy } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router';
 const router = createBrowserRouter([
     {
         path: '*',

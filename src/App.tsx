@@ -1,5 +1,5 @@
 import { Suspense, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router';
 import Sidebar from './component/Sidebar';
 import Navbar from './component/Navbar';
 import MessageManager from './component/MessageManager';
